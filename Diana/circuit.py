@@ -4,9 +4,6 @@ from isq import LocalDevice, QcisDevice
 from isq import quantumCor
 from ezQpy import *
 import copy
-import numpy as np
-from ezQpy import *
-
 
 pi = 3.1415
 
@@ -52,15 +49,16 @@ ccz = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]])
 
-
-# 实现对于量子电路的构造
-# param: bit_len: 量子比特数
-# param: bit: 量子比特
-# param: matrix: 量子门矩阵
-# return: isq_str: 量子电路字符串
+# 实现对于映射关系的存储
+# params Matrix: 用于存储映射关系的矩阵
+# params order: 用于存储映射关系的顺序
+# params m_input: 用于存储映射关系的输入
+# params len: 用于存储映射关系的长度
+# params ct1: 用于存储映射关系的第一个输入
+# params ct2: 用于存储映射关系的第二个输入
 def save(ct1, ct2, Matrix, order, m_input, len):
     if m_input[ct2]==1:
-        print("save error.")
+        print("save error, please check the input and reuinput!")
         return Matrix
     for i in range(len):
         if ct1 == order[i]:
@@ -76,6 +74,7 @@ def save(ct1, ct2, Matrix, order, m_input, len):
     order[ct2]=order[ct1_index]
     order[ct1_index]=ct2_order
     m_input[ct2]=1
+    print('the quantum circuit updated succesfully!')
     return new_Matrix
     # if(num<=cnt):
     #     new_Matrix = np.copy(Matrix)
@@ -97,7 +96,11 @@ def save(ct1, ct2, Matrix, order, m_input, len):
     #     new_Matrix[cnt] = tmp
     #     return new_Matrix
 
-
+# 实现对于量子电路的构造
+# param: bit_len: 量子比特数
+# param: bit: 量子比特
+# param: matrix: 量子门矩阵
+# return: isq_str: 量子电路字符串
 def circuit(bit_len, bit: list, matrix):
     # 根据量子比特数，初始化量子比特
     isq_str = '''qbit '''
@@ -162,7 +165,7 @@ def circuit(bit_len, bit: list, matrix):
 
 
 def readBit():
-    bit_in = input("输入4位查找bit")
+    bit_in = input("please input the 4-bits for searching:")
     return bit_in
 
 
@@ -204,8 +207,11 @@ def run(bit_in, bit_number, matrix):  # bit_number为处理位数输入2或4
 
             # =============================================isq跑================================================
             # # 转换为qcis指令
+            # print("the first isq gate is displayed as follows")
+            # print(isq_str)
             # ld = LocalDevice()
             # ld_res = ld.run(isq_str)
+            # ld.draw_circuit(isq_str)
             # # print(ld_res)
 
             # =============================================isq跑================================================
@@ -215,6 +221,10 @@ def run(bit_in, bit_number, matrix):  # bit_number为处理位数输入2或4
             ld = LocalDevice()
             ir = ld.compile_to_ir(isq_str, target="qcis")
             account = Account(login_key='f719ca98fc5ae6ab03580a039bd0289f', machine_name='ClosedBetaQC')
+            print("the quantum circuit launch successfully!")
+            print("the login key is:f719ca98fc5ae6ab03580a039bd0289f")
+            print("the machine name is: ClosedBetaQC")
+        
             # account = Account(login_key='f719ca98fc5ae6ab03580a039bd0289f', machine_name='应答机A')
             
             # 拓扑结构映射
@@ -239,8 +249,12 @@ def run(bit_in, bit_number, matrix):  # bit_number为处理位数输入2或4
 
             # =============================================isq跑================================================
             # # 转换为qcis指令
+            # print("the first isq gate is displayed as follows")
+            # print(isq_str)
             # ld = LocalDevice(2000)
             # ld_res = ld.run(isq_str)
+            # # draw the circuit
+            # ld.draw_circuit(isq_str)
             # # print(ld_res)
 
             # =============================================isq跑================================================
@@ -252,6 +266,9 @@ def run(bit_in, bit_number, matrix):  # bit_number为处理位数输入2或4
             ir = ld.compile_to_ir(isq_str, target = "qcis")
             account = Account(login_key='f719ca98fc5ae6ab03580a039bd0289f', machine_name='ClosedBetaQC')
             # account = Account(login_key='f719ca98fc5ae6ab03580a039bd0289f', machine_name='应答机A')
+            print("the quantum circuit launch successfully!")
+            print("the login key is:f719ca98fc5ae6ab03580a039bd0289f")
+            print("the machine name is: ClosedBetaQC")
             
             # 拓扑结构映射
             isq_qcis = account.qcis_mapping_isq(ir)
@@ -273,8 +290,22 @@ if __name__ == "__main__":
     # a_new_list = save(2,a_list,0)
     # a_new_list = save(3, a_new_list, 1)
 
-    b_new_list = save(2, 0, b_list, b_order, b_input, 16)
-    b_new_list = save(0, 8, b_new_list, b_order, b_input, 16)
+    b_new_list = save(15, 0, b_list, b_order, b_input, 16)
+    b_new_list = save(14, 1, b_new_list, b_order, b_input, 16)
+    b_new_list = save(13, 2, b_new_list, b_order, b_input, 16)
+    b_new_list = save(12, 3, b_new_list, b_order, b_input, 16)
+    b_new_list = save(11, 4, b_new_list, b_order, b_input, 16)
+    b_new_list = save(10, 5, b_new_list, b_order, b_input, 16)
+    b_new_list = save(9, 6, b_new_list, b_order, b_input, 16)
+    b_new_list = save(8, 7, b_new_list, b_order, b_input, 16)
+    b_new_list = save(7, 8, b_new_list, b_order, b_input, 16)
+    b_new_list = save(6, 9, b_new_list, b_order, b_input, 16)
+    b_new_list = save(5, 10, b_new_list, b_order, b_input, 16)
+    b_new_list = save(4, 11, b_new_list, b_order, b_input, 16)
+    b_new_list = save(3, 12, b_new_list, b_order, b_input, 16)
+    b_new_list = save(2, 13, b_new_list, b_order, b_input, 16)
+    b_new_list = save(1, 14, b_new_list, b_order, b_input, 16)
+    b_new_list = save(0, 15, b_new_list, b_order, b_input, 16)
 
     res = run(readBit(), 4, b_new_list)
     # res = run(readBit(), 2, a_new_list)
